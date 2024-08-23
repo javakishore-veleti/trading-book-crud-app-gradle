@@ -1,4 +1,19 @@
+import groovy.yaml.YamlSlurper
+import groovy.json.JsonOutput
+import java.nio.charset.Charset
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.22'
+		classpath group: 'org.codehaus.groovy', name: 'groovy-yaml', version: '3.0.22'
+	}
+}
+
 plugins {
+	id 'base'
 	id 'java'
 	id 'org.springframework.boot' version '3.3.3'
 	id 'io.spring.dependency-management' version '1.1.6'
@@ -18,12 +33,41 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	toCopy
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+defaultTasks 'downloadLib', 'createTargetDeploymentManifests'
+
+task downloadLib(type: Copy) {
+	dependsOn clean
+	from configurations.toCopy
+	into 'build/lib'
+}
+
+task copyTemplates(type: Copy) {
+	from 'src'
+	include 'manifest.yaml'
+	include 'application.yaml'
+	include '*-targets.yaml'
+	into 'build/tmp'
+}
+
+task createTargetDeploymentManifests {
+	dependsOn copyTemplates
+	def YamlSlurper = new YamlSlurper()
+	doLast {
+		
+	}
+}
+
 
 bootRun {
     mainClass.set('com.jk.research.trading_app.TradingBookCrudAppApplication')

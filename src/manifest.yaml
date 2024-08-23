@@ -1,0 +1,14 @@
+---
+applications:
+  - name: Trading Book Crud App Using Gradle
+    memory: 2G
+    instances: 2
+    buildpacks:
+      - java_buildpack
+    timeout: 120
+    health-check-type: http
+    health-check-http-endpoint: /health-check
+    health-check-invocation-timeout: 120
+    env:
+      JAVA_OPTS: '-Xss500k'
+      logging.pattern.console: "%d"
